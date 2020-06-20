@@ -1,9 +1,11 @@
 #include <chrono>
+#include <stdlib.h>
 #include <algorithm>
 #include <random>
 #include <iostream>
 #include <parallel/algorithm>
 #include <tbb/parallel_sort.h>
+#include <tbb/task_scheduler_init.h>
 int NUM_RUNS = 100;
 
 void display(
@@ -20,19 +22,19 @@ void display(
 }
 
 int main(int argc, char* argv[]) {
-    if argc < 3{
-        std::cout<<"Usage <file> <problem_size> <num_threads>"<<endl;
+    if(argc < 3){
+        std::cout<<"Usage <file> <problem_size> <num_threads>"<<std::endl;
         exit(1);
     }
-    int len = int(argv[1]);
-    int num_threads = int(argv[2]);
+    int len = atoi(argv[1]);
+    int num_threads = atoi(argv[2]);
     tbb::task_scheduler_init init(num_threads);
-    setenv("OMP_NUM_THREADS", argv[2], 1)
+    setenv("OMP_NUM_THREADS", argv[2], 1);
 
   std::vector<uint64_t> v;
   v.resize(len);
 
-  auto init = [&] () {
+  auto myinit = [&] () {
     std::random_device device;
     std::mt19937_64 rnd(device());
     for (int i = 0; i < len; ++i) {
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]) {
 
   {
     for(int i = 0; i<NUM_RUNS; i++){
-    init();
+    myinit();
     auto start = std::chrono::high_resolution_clock::now();
     std::stable_sort(v.begin(), v.end());
     auto end = std::chrono::high_resolution_clock::now();
@@ -51,7 +53,7 @@ int main(int argc, char* argv[]) {
   }
   {
     for(int i = 0; i<NUM_RUNS; i++){
-    init();
+    myinit();
     auto start = std::chrono::high_resolution_clock::now();
     std::sort(v.begin(), v.end());
     auto end = std::chrono::high_resolution_clock::now();
@@ -60,7 +62,7 @@ int main(int argc, char* argv[]) {
   }
   {
     for(int i = 0; i<NUM_RUNS; i++){
-    init();
+    myinit();
     auto start = std::chrono::high_resolution_clock::now();
     __gnu_parallel::stable_sort(v.begin(), v.end());
     auto end = std::chrono::high_resolution_clock::now();
@@ -69,7 +71,7 @@ int main(int argc, char* argv[]) {
   }
   {
     for(int i = 0; i<NUM_RUNS; i++){
-    init();
+    myinit();
     auto start = std::chrono::high_resolution_clock::now();
     __gnu_parallel::sort(v.begin(), v.end());
     auto end = std::chrono::high_resolution_clock::now();
@@ -78,7 +80,7 @@ int main(int argc, char* argv[]) {
   }
   {
     for(int i = 0; i<NUM_RUNS; i++){
-    init();
+    myinit();
     auto start = std::chrono::high_resolution_clock::now();
     tbb::parallel_sort(v.begin(), v.end());
     auto end = std::chrono::high_resolution_clock::now();
