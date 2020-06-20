@@ -10,14 +10,15 @@ int NUM_RUNS = 100;
 
 void display(
   std::string name,
-  std::chrono::time_point<std::chrono::high_resolution_clock> start,
-  std::chrono::time_point<std::chrono::high_resolution_clock> end
+  std::chrono::time_point<std::chrono::high_resolution_clock> net_time,
 ) {
   std::cout << name;
   for (auto i = name.size(); i < 30; ++i) {
     std::cout << " ";
   }
-  std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  std::chrono::duration<double, std::chrono::milliseconds> fp_ms = net_time;
+  double avg_time = fp_ms/double(NUM_RUNS);
+  std::cout << avg_time;
   std::cout << " ms" << std::endl;
 }
 
@@ -43,13 +44,15 @@ int main(int argc, char* argv[]) {
   };
 
   {
+    std::chrono::time_point<std::chrono::high_resolution_clock> total_time = 0;
     for(int i = 0; i<NUM_RUNS; i++){
-    myinit();
-    auto start = std::chrono::high_resolution_clock::now();
-    std::stable_sort(v.begin(), v.end());
-    auto end = std::chrono::high_resolution_clock::now();
-    display("std::stable_sort", start, end);
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        std::stable_sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        total_time += end - start;
     }
+    display("std::stable_sort", total_time);
   }
   {
     for(int i = 0; i<NUM_RUNS; i++){
