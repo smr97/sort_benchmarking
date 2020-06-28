@@ -74,6 +74,7 @@ int main(int argc, char* argv[]) {
         __gnu_parallel::stable_sort(v.begin(), v.end());
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> sorting_time = end - start;
+        total_sort_duration += sorting_time;
     }
     display("__gnu_parallel::stable_sort", total_sort_duration.count());
   }
@@ -85,6 +86,7 @@ int main(int argc, char* argv[]) {
         __gnu_parallel::sort(v.begin(), v.end());
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> sorting_time = end - start;
+        total_sort_duration += sorting_time;
     }
     display("__gnu_parallel::sort", total_sort_duration.count());
   }
@@ -96,6 +98,7 @@ int main(int argc, char* argv[]) {
         tbb::parallel_sort(v.begin(), v.end());
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> sorting_time = end - start;
+        total_sort_duration += sorting_time;
     }
     display("tbb::parallel_sort", total_sort_duration.count());
   }
