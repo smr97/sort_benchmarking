@@ -2,11 +2,11 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.*;
 
-final int NUM_RUNS = 100;
 
 public class Bench {
+    final static int NUM_RUNS = 100;
     public static void main(String[] args) {
-        int len;
+        int len = 0;
         try {
             len = Integer.parseInt(args[0]);
         } catch (NumberFormatException nfe) {
@@ -27,8 +27,8 @@ public class Bench {
                 long start = System.currentTimeMillis();
                 Arrays.sort(arr);
                 long end = System.currentTimeMillis();
-                if r>19 {
-                    run_times[r-19] = end - start;
+                if (r>19) {
+                    run_times[r-20] = end - start;
                 }
             }
             long sum_times = LongStream.of(run_times).sum();
@@ -47,8 +47,8 @@ public class Bench {
                 long start = System.currentTimeMillis();
                 Arrays.parallelSort(arr);
                 long end = System.currentTimeMillis();
-                if r>19 {
-                    run_times[r-19] = end - start;
+                if (r>19) {
+                    run_times[r-20] = end - start;
                 }
             }
             long sum_times = LongStream.of(run_times).sum();
