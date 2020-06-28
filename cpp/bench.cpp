@@ -22,14 +22,11 @@ void display(
 }
 
 int main(int argc, char* argv[]) {
-    if(argc < 3){
-        std::cout<<"Usage <file> <problem_size> <num_threads>"<<std::endl;
+    if(argc < 2){
+        std::cout<<"Usage <file> <problem_size>"<<std::endl;
         exit(1);
     }
     int len = atoi(argv[1]);
-    int num_threads = atoi(argv[2]);
-    tbb::task_scheduler_init init(num_threads);
-    setenv("OMP_NUM_THREADS", argv[2], 1);
 
   std::vector<uint64_t> v;
   v.resize(len);
