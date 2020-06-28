@@ -10,14 +10,13 @@ int NUM_RUNS = 100;
 
 void display(
   std::string name,
-  std::chrono::time_point<std::chrono::high_resolution_clock> net_time,
+  double net_time_in_ms
 ) {
   std::cout << name;
   for (auto i = name.size(); i < 30; ++i) {
     std::cout << " ";
   }
-  std::chrono::duration<double, std::chrono::milliseconds> fp_ms = net_time;
-  double avg_time = fp_ms/double(NUM_RUNS);
+  double avg_time = net_time_in_ms/double(NUM_RUNS);
   std::cout << avg_time;
   std::cout << " ms" << std::endl;
 }
@@ -44,51 +43,61 @@ int main(int argc, char* argv[]) {
   };
 
   {
-    std::chrono::time_point<std::chrono::high_resolution_clock> total_time = 0;
+    auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
     for(int i = 0; i<NUM_RUNS; i++){
         myinit();
         auto start = std::chrono::high_resolution_clock::now();
         std::stable_sort(v.begin(), v.end());
         auto end = std::chrono::high_resolution_clock::now();
-        total_time += end - start;
+        std::chrono::duration<double, std::milli> sorting_time = end - start;
+        total_sort_duration += sorting_time;
     }
-    display("std::stable_sort", total_time);
+    display("std::stable_sort", total_sort_duration.count());
   }
   {
+    auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
     for(int i = 0; i<NUM_RUNS; i++){
-    myinit();
-    auto start = std::chrono::high_resolution_clock::now();
-    std::sort(v.begin(), v.end());
-    auto end = std::chrono::high_resolution_clock::now();
-    display("std::sort", start, end);
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        std::sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> sorting_time = end - start;
+        total_sort_duration += sorting_time;
     }
+    display("std::sort", total_sort_duration.count());
   }
   {
+    auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
     for(int i = 0; i<NUM_RUNS; i++){
-    myinit();
-    auto start = std::chrono::high_resolution_clock::now();
-    __gnu_parallel::stable_sort(v.begin(), v.end());
-    auto end = std::chrono::high_resolution_clock::now();
-    display("__gnu_parallel::stable_sort", start, end);
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        __gnu_parallel::stable_sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> sorting_time = end - start;
     }
+    display("__gnu_parallel::stable_sort", total_sort_duration.count());
   }
   {
+    auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
     for(int i = 0; i<NUM_RUNS; i++){
-    myinit();
-    auto start = std::chrono::high_resolution_clock::now();
-    __gnu_parallel::sort(v.begin(), v.end());
-    auto end = std::chrono::high_resolution_clock::now();
-    display("__gnu_parallel::sort", start, end);
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        __gnu_parallel::sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> sorting_time = end - start;
     }
+    display("__gnu_parallel::sort", total_sort_duration.count());
   }
   {
+    auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
     for(int i = 0; i<NUM_RUNS; i++){
-    myinit();
-    auto start = std::chrono::high_resolution_clock::now();
-    tbb::parallel_sort(v.begin(), v.end());
-    auto end = std::chrono::high_resolution_clock::now();
-    display("tbb::parallel_sort", start, end);
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        tbb::parallel_sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> sorting_time = end - start;
     }
+    display("tbb::parallel_sort", total_sort_duration.count());
   }
 
   return 0;
