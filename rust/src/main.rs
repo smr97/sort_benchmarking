@@ -26,42 +26,48 @@ macro_rules! bench_sort {
 
 fn main() {
     let args = env::args().collect::<Vec<_>>();
-    assert_eq!(args.len(), 2);
+    //command line arguments should be problem_size run_sequential.
+    //latter is 1 for baselines and 0 for the parallel algorithms
+    assert_eq!(args.len(), 3);
     let problem_size: u64 = args[1].parse().unwrap();
+    let run_sequential: u32 = args[2].parse().unwrap();
     let mut input: Vec<u64> = (0..problem_size).map(|_| rand::random()).collect();
-    {
-        //Sequential stable sort
-        let measured_time = bench_sort!(input, input.sort());
-        println!("seq stable\t{:?}", measured_time);
-    }
-    {
-        //Sequential unstable sort
-        let measured_time = bench_sort!(input, input.sort_unstable());
-        println!("seq unstable\t{:?}", measured_time);
-    }
-    {
-        //Rayon stable
-        let measured_time = bench_sort!(input, input.par_sort());
-        println!("rayon stable\t{:?}", measured_time);
-    }
-    {
-        //Rayon unstable
-        let measured_time = bench_sort!(input, input.par_sort_unstable());
-        println!("rayon unstable\t{:?}", measured_time);
-    }
-    {
-        //Rayon Adaptive stable iterator
-        let measured_time = bench_sort!(input, merge_sort_adaptive(&mut input));
-        println!("adaptive iter\t{:?}", measured_time);
-    }
-    {
-        //Try fold slice manual sort
-        let measured_time = bench_sort!(input, slice_par_sort(&mut input));
-        println!("try_fold slice\t{:?}", measured_time);
-    }
-    {
-        //Try fold iterator sort
-        let measured_time = bench_sort!(input, iter_par_sort(&mut input));
-        println!("try_fold iter\t{:?}", measured_time);
+    if run_sequential > 0 {
+        {
+            //Sequential stable sort
+            let measured_time = bench_sort!(input, input.sort());
+            println!("seq stable\t{:?}", measured_time);
+        }
+        {
+            //Sequential unstable sort
+            let measured_time = bench_sort!(input, input.sort_unstable());
+            println!("seq unstable\t{:?}", measured_time);
+        }
+    } else {
+        {
+            //Rayon stable
+            let measured_time = bench_sort!(input, input.par_sort());
+            println!("rayon stable\t{:?}", measured_time);
+        }
+        {
+            //Rayon unstable
+            let measured_time = bench_sort!(input, input.par_sort_unstable());
+            println!("rayon unstable\t{:?}", measured_time);
+        }
+        {
+            //Rayon Adaptive stable iterator
+            let measured_time = bench_sort!(input, merge_sort_adaptive(&mut input));
+            println!("adaptive iter\t{:?}", measured_time);
+        }
+        {
+            //Try fold slice manual sort
+            let measured_time = bench_sort!(input, slice_par_sort(&mut input));
+            println!("try_fold slice\t{:?}", measured_time);
+        }
+        {
+            //Try fold iterator sort
+            let measured_time = bench_sort!(input, iter_par_sort(&mut input));
+            println!("try_fold iter\t{:?}", measured_time);
+        }
     }
 }
