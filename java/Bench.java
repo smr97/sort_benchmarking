@@ -16,7 +16,7 @@ public class Bench {
             System.exit(1);
         }
 
-        long[] arr = new long[len];
+        int[] arr = new int[len];
         if (run_sequential > 0) {
             {
                 long[] run_times = new long[NUM_RUNS];

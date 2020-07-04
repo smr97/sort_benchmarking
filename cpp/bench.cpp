@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     int len = atoi(argv[1]);
     int run_sequential = atoi(argv[2]);
 
-  std::vector<uint64_t> v;
+  std::vector<uint32_t> v;
   v.resize(len);
 
   auto myinit = [&] () {

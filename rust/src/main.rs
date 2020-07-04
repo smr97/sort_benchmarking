@@ -29,9 +29,9 @@ fn main() {
     //command line arguments should be problem_size run_sequential.
     //latter is 1 for baselines and 0 for the parallel algorithms
     assert_eq!(args.len(), 3);
-    let problem_size: u64 = args[1].parse().unwrap();
+    let problem_size: u32 = args[1].parse().unwrap();
     let run_sequential: u32 = args[2].parse().unwrap();
-    let mut input: Vec<u64> = (0..problem_size).map(|_| rand::random()).collect();
+    let mut input: Vec<u32> = (0..problem_size).map(|_| rand::random()).collect();
     if run_sequential > 0 {
         {
             //Sequential stable sort
