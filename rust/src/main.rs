@@ -5,7 +5,7 @@ use rayon_try_fold::{iter_par_sort, slice_par_sort};
 use std::env;
 use std::time::Instant;
 
-const NUM_RUNS: usize = 100;
+const NUM_RUNS: usize = 25;
 
 fn mean_time<F: FnMut() -> std::time::Duration>(mut bench_function: F) -> std::time::Duration {
     (0..NUM_RUNS)

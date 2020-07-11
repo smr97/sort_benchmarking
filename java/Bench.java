@@ -4,7 +4,7 @@ import java.util.stream.*;
 
 
 public class Bench {
-    final static int NUM_RUNS = 100;
+    final static int NUM_RUNS = 25;
     public static void main(String[] args) {
         int len = 0;
         int run_sequential = 0;

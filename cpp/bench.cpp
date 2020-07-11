@@ -6,7 +6,7 @@
 #include <parallel/algorithm>
 #include <tbb/parallel_sort.h>
 #include <tbb/task_scheduler_init.h>
-int NUM_RUNS = 100;
+int NUM_RUNS = 25;
 
 void display(
   std::string name,
