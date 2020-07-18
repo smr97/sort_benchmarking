@@ -1,3 +1,6 @@
+#[global_allocator]
+static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
 use rand::{seq::SliceRandom, thread_rng};
 use rayon::prelude::*;
 use rayon_adaptive::merge_sort_adaptive;
