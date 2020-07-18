@@ -23,7 +23,7 @@ public class Bench {
                 for(int r = 0; r < NUM_RUNS+20; r++){
                     Random rnd = new Random();
                     for (int i = 0; i < len; ++i) {
-                        arr[i] = rnd.nextLong();
+                        arr[i] = rnd.nextInt();
                     }
 
                     long start = System.currentTimeMillis();
@@ -35,7 +35,7 @@ public class Bench {
                 }
                 long sum_times = LongStream.of(run_times).sum();
 
-                System.out.println("Arrays.sort          " + ((double)(sum_times)/(double)(NUM_RUNS)) + " ms");
+                System.out.println("Arrays.sort          " + ((double)(sum_times)/(double)(1000*NUM_RUNS)) + " ms");
             }
         } else {
             {
@@ -43,7 +43,7 @@ public class Bench {
                 for(int r = 0; r < NUM_RUNS+20; r++){
                     Random rnd = new Random();
                     for (int i = 0; i < len; ++i) {
-                        arr[i] = rnd.nextLong();
+                        arr[i] = rnd.nextInt();
                     }
 
                     long start = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class Bench {
                 }
                 long sum_times = LongStream.of(run_times).sum();
 
-                System.out.println("Arrays.parallelSort  " + ((double)(sum_times)/(double)(NUM_RUNS)) + " ms");
+                System.out.println("Arrays.parallelSort  " + ((double)(sum_times)/(double)(1000*NUM_RUNS)) + " ms");
 
             }
         }

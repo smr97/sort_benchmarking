@@ -16,7 +16,7 @@ void display(
   for (auto i = name.size(); i < 30; ++i) {
     std::cout << " ";
   }
-  double avg_time = net_time_in_ms/double(NUM_RUNS);
+  double avg_time = net_time_in_ms/(1000.0* double(NUM_RUNS));
   std::cout << avg_time;
   std::cout << " ms" << std::endl;
 }
