@@ -5,6 +5,8 @@ NUM_THREADS=$2
 cd $(readlink -f "$(dirname "$0")")
 set -ex
 
+FLAG="$(($NUM_THREADS-1))"
+
 javac Bench.java
 
 echo ${NUM_THREADS}" threads"
