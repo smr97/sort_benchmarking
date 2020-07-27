@@ -1,14 +1,10 @@
-#[global_allocator]
-static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
-
 use rand::{seq::SliceRandom, thread_rng};
 use rayon::prelude::*;
-use rayon_adaptive::merge_sort_adaptive;
 use rayon_try_fold::{iter_par_sort, slice_par_sort};
 use std::env;
 use std::time::Instant;
 
-const NUM_RUNS: usize = 25;
+const NUM_RUNS: usize = 100;
 
 fn mean_time<F: FnMut() -> std::time::Duration>(mut bench_function: F) -> std::time::Duration {
     (0..NUM_RUNS)
@@ -41,26 +37,11 @@ fn main() {
             let measured_time = bench_sort!(input, input.sort());
             println!("seq stable\t{:?}", measured_time.as_secs_f64());
         }
-        {
-            //Sequential unstable sort
-            let measured_time = bench_sort!(input, input.sort_unstable());
-            println!("seq unstable\t{:?}", measured_time.as_secs_f64());
-        }
     } else {
         {
             //Rayon stable
             let measured_time = bench_sort!(input, input.par_sort());
             println!("rayon stable\t{:?}", measured_time.as_secs_f64());
-        }
-        {
-            //Rayon unstable
-            let measured_time = bench_sort!(input, input.par_sort_unstable());
-            println!("rayon unstable\t{:?}", measured_time.as_secs_f64());
-        }
-        {
-            //Rayon Adaptive stable iterator
-            let measured_time = bench_sort!(input, merge_sort_adaptive(&mut input));
-            println!("adaptive iter\t{:?}", measured_time.as_secs_f64());
         }
         {
             //Try fold slice manual sort
