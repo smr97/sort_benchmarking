@@ -7,7 +7,6 @@ edition = "2018"
 [profile.release]
 lto = "fat"
 codegen-units = 1
-panic = "abort"
 
 [dependencies]
 rayon_try_fold = {git = "https://github.com/wagnerf42/rayon_try_fold.git", branch = "bench/compileflags"}
