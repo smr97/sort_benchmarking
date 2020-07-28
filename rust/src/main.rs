@@ -29,9 +29,9 @@ fn main() {
     //latter is 1 for baselines and 0 for the parallel algorithms
     assert_eq!(args.len(), 3);
     let problem_size: u32 = args[1].parse().unwrap();
-    let run_sequential: u32 = args[2].parse().unwrap();
+    let num_threads: u32 = args[2].parse().unwrap();
     let mut input: Vec<u32> = (0..problem_size).map(|_| rand::random()).collect();
-    if run_sequential > 0 {
+    if num_threads == 1 {
         {
             //Sequential stable sort
             let measured_time = bench_sort!(input, input.sort());
