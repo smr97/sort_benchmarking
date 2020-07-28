@@ -6,7 +6,6 @@ cd $(readlink -f "$(dirname "$0")")
 set -ex
 
 echo ${NUM_THREADS}" threads"
-cargo build --release
 
 if [ $NUM_THREADS == "1" ]
 then
