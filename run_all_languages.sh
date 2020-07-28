@@ -6,7 +6,12 @@ PROBLEM_SIZE=100000000
 
 for R in ${RUN_SCRIPTS[*]}
 do
-    for T in $(seq 1 ${THREAD_INCREMENTS} ${MAX_THREADS})
+    $R ${PROBLEM_SIZE} 1
+    for T in $(seq 2 4 32)
+    do
+            $R ${PROBLEM_SIZE} ${T}
+    done
+    for T in $(seq 34 2 64)
     do
             $R ${PROBLEM_SIZE} ${T}
     done
