@@ -15,7 +15,6 @@ void write_results(
   std::ofstream outf;
   double mean_time = 0.0;
   outf.open(name + "_" + std::to_string(num_threads) + ".csv", std::ios::out);
-  outf << num_threads << " threads" << std::endl;
   for (const auto _dur : all_times) {
     outf << _dur.count() / 1000.0 << std::endl;
     mean_time += _dur.count();
