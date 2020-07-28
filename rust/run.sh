@@ -7,7 +7,6 @@ set -ex
 source $HOME/.profile
 
 echo ${NUM_THREADS}" threads"
-cargo build --release
 
 if [ $NUM_THREADS == "1" ]
 then
