@@ -5,6 +5,7 @@ NUM_THREADS=$2
 FLAG="$(($NUM_THREADS-1))"
 cd $(readlink -f "$(dirname "$0")")
 set -ex
+source $HOME/.profile
 
 echo ${NUM_THREADS}" threads"
 
