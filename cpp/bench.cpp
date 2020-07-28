@@ -1,38 +1,41 @@
-#include <chrono>
-#include <stdlib.h>
 #include <algorithm>
-#include <random>
+#include <chrono>
+#include <fstream>
 #include <iostream>
 #include <parallel/algorithm>
-#include "pstl/execution"
+#include <random>
+#include <stdlib.h>
 #include "pstl/algorithm"
+#include "pstl/execution"
 int NUM_RUNS = 100;
 
-void display(
-  std::string name,
-  double net_time_in_ms
-) {
-  std::cout << name;
-  for (auto i = name.size(); i < 30; ++i) {
-    std::cout << " ";
+void write_results(
+    std::string name, int num_threads,
+    std::vector<std::chrono::duration<double, std::milli>> all_times) {
+  std::ofstream outf;
+  outf.open(name + "_" + std::to_string(num_threads) + ".csv", std::ios::out);
+  outf << num_threads << " threads" << std::endl;
+  for (const auto _dur : all_times) {
+    outf << _dur.count() / 1000.0 << std::endl;
   }
-  double avg_time = net_time_in_ms/(1000.0* double(NUM_RUNS));
-  std::cout << avg_time;
-  std::cout << " s" << std::endl;
+  outf.close();
 }
 
-int main(int argc, char* argv[]) {
-    if(argc < 3){
-        std::cout<<"Usage <file> <problem_size> <run_sequential>; where run_sequential is 1 for baselines and 0 for parallel algorithms"<<std::endl;
-        exit(1);
-    }
-    int len = atoi(argv[1]);
-    int run_sequential = atoi(argv[2]);
+int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    std::cout << "Usage <file> <problem_size> <num_threads>; where num_threads "
+                 "is 1 for baselines and the real number of threads for "
+                 "parallel algorithms"
+              << std::endl;
+    exit(1);
+  }
+  int len = atoi(argv[1]);
+  int num_threads = atoi(argv[2]);
 
   std::vector<uint32_t> v;
   v.resize(len);
 
-  auto myinit = [&] () {
+  auto myinit = [&]() {
     std::random_device device;
     std::mt19937_64 rnd(device());
     for (int i = 0; i < len; ++i) {
@@ -40,43 +43,40 @@ int main(int argc, char* argv[]) {
     }
   };
 
-  if (run_sequential>0){
+  if (num_threads == 1) {
     {
-      auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
-      for(int i = 0; i<NUM_RUNS; i++){
-          myinit();
-          auto start = std::chrono::high_resolution_clock::now();
-          std::stable_sort(pstl::execution::seq, v.begin(), v.end());
-          auto end = std::chrono::high_resolution_clock::now();
-          std::chrono::duration<double, std::milli> sorting_time = end - start;
-          total_sort_duration += sorting_time;
+      std::vector<std::chrono::duration<double, std::milli>> times;
+      for (int i = 0; i < NUM_RUNS; i++) {
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        std::stable_sort(pstl::execution::seq, v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        times.push_back(end - start);
       }
-      display("stable_sort+pstlseq", total_sort_duration.count());
+      write_results("cppsort_seq", num_threads, times);
     }
   } else {
     {
-      auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
-      for(int i = 0; i<NUM_RUNS; i++){
-          myinit();
-          auto start = std::chrono::high_resolution_clock::now();
-          std::stable_sort(pstl::execution::par, v.begin(), v.end());
-          auto end = std::chrono::high_resolution_clock::now();
-          std::chrono::duration<double, std::milli> sorting_time = end - start;
-          total_sort_duration += sorting_time;
+      std::vector<std::chrono::duration<double, std::milli>> times;
+      for (int i = 0; i < NUM_RUNS; i++) {
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        std::stable_sort(pstl::execution::par, v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        times.push_back(end - start);
       }
-      display("stable_sort+pstlpar", total_sort_duration.count());
+      write_results("cppsort_pstl", num_threads, times);
     }
     {
-      auto total_sort_duration = std::chrono::duration<double, std::milli>::zero();
-      for(int i = 0; i<NUM_RUNS; i++){
-          myinit();
-          auto start = std::chrono::high_resolution_clock::now();
-          __gnu_parallel::stable_sort(v.begin(), v.end());
-          auto end = std::chrono::high_resolution_clock::now();
-          std::chrono::duration<double, std::milli> sorting_time = end - start;
-          total_sort_duration += sorting_time;
+      std::vector<std::chrono::duration<double, std::milli>> times;
+      for (int i = 0; i < NUM_RUNS; i++) {
+        myinit();
+        auto start = std::chrono::high_resolution_clock::now();
+        __gnu_parallel::stable_sort(v.begin(), v.end());
+        auto end = std::chrono::high_resolution_clock::now();
+        times.push_back(end - start);
       }
-      display("__gnu_parallel::stable_sort", total_sort_duration.count());
+      write_results("cppsort_gnupar", num_threads, times);
     }
   }
 
