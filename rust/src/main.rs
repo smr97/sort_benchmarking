@@ -2,19 +2,32 @@ use rand::{seq::SliceRandom, thread_rng};
 use rayon::prelude::*;
 use rayon_try_fold::{iter_par_sort, slice_par_sort};
 use std::env;
-use std::time::Instant;
+use std::fs::File;
+use std::io::prelude::*;
+use std::{path::Path, time::Instant};
 
 const NUM_RUNS: usize = 100;
 
-fn mean_time<F: FnMut() -> std::time::Duration>(mut bench_function: F) -> std::time::Duration {
+fn write_to_file<P: AsRef<Path>>(name: P, input: Vec<f64>) -> std::io::Result<()> {
+    let mut buffer = File::create(name)?;
+    let mean_value = input.iter().cloned().sum::<f64>() / input.iter().len() as f64;
+    input
+        .into_iter()
+        .try_for_each(|something| writeln!(&mut buffer, "{}", something))?;
+    writeln!(&mut buffer, "mean_time:{}", mean_value)?;
+    Ok(())
+}
+
+fn measure_times<F: FnMut() -> std::time::Duration>(mut bench_function: F) -> Vec<f64> {
     (0..NUM_RUNS)
         .map(|_| bench_function())
-        .sum::<std::time::Duration>()
-        .div_f64(NUM_RUNS as f64)
+        .map(|dur| dur.as_secs_f64())
+        .collect()
 }
+
 macro_rules! bench_sort {
     ($inp: ident, $sortexp: expr) => {
-        mean_time(|| {
+        measure_times(|| {
             $inp.shuffle(&mut thread_rng());
             let start = Instant::now();
             $sortexp;
@@ -23,7 +36,7 @@ macro_rules! bench_sort {
     };
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
     //command line arguments should be problem_size run_sequential.
     //latter is 1 for baselines and 0 for the parallel algorithms
@@ -34,24 +47,25 @@ fn main() {
     if num_threads == 1 {
         {
             //Sequential stable sort
-            let measured_time = bench_sort!(input, input.sort());
-            println!("seq stable\t{:?}", measured_time.as_secs_f64());
+            let times = bench_sort!(input, input.sort());
+            write_to_file("rustsort_stable_1", times)?;
         }
     } else {
         {
             //Rayon stable
-            let measured_time = bench_sort!(input, input.par_sort());
-            println!("rayon stable\t{:?}", measured_time.as_secs_f64());
+            let times = bench_sort!(input, input.par_sort());
+            write_to_file(format!("rustsort_rayon_{}", num_threads), times)?;
         }
         {
             //Try fold slice manual sort
-            let measured_time = bench_sort!(input, slice_par_sort(&mut input));
-            println!("try_fold slice\t{:?}", measured_time.as_secs_f64());
+            let times = bench_sort!(input, slice_par_sort(&mut input));
+            write_to_file(format!("rustsort_slice_{}", num_threads), times)?;
         }
         {
             //Try fold iterator sort
-            let measured_time = bench_sort!(input, iter_par_sort(&mut input));
-            println!("try_fold iter\t{:?}", measured_time.as_secs_f64());
+            let times = bench_sort!(input, iter_par_sort(&mut input));
+            write_to_file(format!("rustsort_iter_{}", num_threads), times)?;
         }
     }
+    Ok(())
 }
