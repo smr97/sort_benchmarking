@@ -13,11 +13,16 @@ void write_results(
     std::string name, int num_threads,
     std::vector<std::chrono::duration<double, std::milli>> all_times) {
   std::ofstream outf;
+  double mean_time = 0.0;
   outf.open(name + "_" + std::to_string(num_threads) + ".csv", std::ios::out);
   outf << num_threads << " threads" << std::endl;
   for (const auto _dur : all_times) {
     outf << _dur.count() / 1000.0 << std::endl;
+    mean_time += _dur.count();
   }
+  mean_time /= all_times.size();
+  mean_time /= 1000.0;
+  outf<<"mean_time:"<<mean_time<<std::endl;
   outf.close();
 }
 
