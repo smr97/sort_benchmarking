@@ -1,6 +1,6 @@
+use kvik::{iter_par_sort, slice_par_sort};
 use rand::{seq::SliceRandom, thread_rng};
 use rayon::prelude::*;
-use rayon_try_fold::{iter_par_sort, slice_par_sort};
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
