@@ -1,6 +1,8 @@
-use kvik::{iter_par_sort, slice_par_sort};
+use kvik::{
+    iter_sort_jc_adaptive, iter_sort_jc_rayon, iter_sort_rayon_adaptive, iter_sort_rayon_rayon,
+    iter_sort_size_adaptive, iter_sort_size_rayon,
+};
 use rand::{seq::SliceRandom, thread_rng};
-use rayon::prelude::*;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
@@ -48,23 +50,32 @@ fn main() -> std::io::Result<()> {
         {
             //Sequential stable sort
             let times = bench_sort!(input, input.sort());
-            write_to_file("rustsort_stable_1", times)?;
+            write_to_file("sort_stable_1", times)?;
         }
     } else {
         {
-            //Rayon stable
-            let times = bench_sort!(input, input.par_sort());
-            write_to_file(format!("rustsort_rayon_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_jc_adaptive(&mut input));
+            write_to_file(format!("jc_adaptive_{}", num_threads), times)?;
         }
         {
-            //Try fold slice manual sort
-            let times = bench_sort!(input, slice_par_sort(&mut input));
-            write_to_file(format!("rustsort_slice_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_jc_rayon(&mut input));
+            write_to_file(format!("jc_rayon_{}", num_threads), times)?;
         }
         {
-            //Try fold iterator sort
-            let times = bench_sort!(input, iter_par_sort(&mut input));
-            write_to_file(format!("rustsort_iter_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_rayon_adaptive(&mut input));
+            write_to_file(format!("rayon_adaptive_{}", num_threads), times)?;
+        }
+        {
+            let times = bench_sort!(input, iter_sort_rayon_rayon(&mut input));
+            write_to_file(format!("rayon_rayon_{}", num_threads), times)?;
+        }
+        {
+            let times = bench_sort!(input, iter_sort_size_adaptive(&mut input));
+            write_to_file(format!("size_adaptive_{}", num_threads), times)?;
+        }
+        {
+            let times = bench_sort!(input, iter_sort_size_rayon(&mut input));
+            write_to_file(format!("size_rayon_{}", num_threads), times)?;
         }
     }
     Ok(())
