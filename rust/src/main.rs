@@ -70,11 +70,17 @@ fn main() -> std::io::Result<()> {
             write_to_file(format!("rayon_rayon_{}", num_threads), times)?;
         }
         {
-            let times = bench_sort!(input, iter_sort_size_adaptive(&mut input));
+            let times = bench_sort!(
+                input,
+                iter_sort_size_adaptive(&mut input, num_threads as usize)
+            );
             write_to_file(format!("size_adaptive_{}", num_threads), times)?;
         }
         {
-            let times = bench_sort!(input, iter_sort_size_rayon(&mut input));
+            let times = bench_sort!(
+                input,
+                iter_sort_size_rayon(&mut input, num_threads as usize)
+            );
             write_to_file(format!("size_rayon_{}", num_threads), times)?;
         }
     }
