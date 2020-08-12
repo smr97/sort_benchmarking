@@ -1,7 +1,4 @@
-use kvik::{
-    iter_sort_jc_adaptive, iter_sort_jc_rayon, iter_sort_rayon_adaptive, iter_sort_rayon_rayon,
-    iter_sort_size_adaptive, iter_sort_size_rayon,
-};
+use kvik::{iter_sort_bd_adaptive, iter_sort_jc_adaptive, iter_sort_rayon_adaptive};
 use rand::{seq::SliceRandom, thread_rng};
 use std::env;
 use std::fs::File;
@@ -54,34 +51,16 @@ fn main() -> std::io::Result<()> {
         }
     } else {
         {
-            let times = bench_sort!(input, iter_sort_jc_adaptive(&mut input));
-            write_to_file(format!("jc_adaptive_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_bd_adaptive(&mut input, num_threads));
+            write_to_file(format!("bounddepth_adaptive_{}", num_threads), times)?;
         }
         {
-            let times = bench_sort!(input, iter_sort_jc_rayon(&mut input));
-            write_to_file(format!("jc_rayon_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_rayon_adaptive(&mut input, num_threads));
+            write_to_file(format!("rayonpolicy_adaptive_{}", num_threads), times)?;
         }
         {
-            let times = bench_sort!(input, iter_sort_rayon_adaptive(&mut input));
-            write_to_file(format!("rayon_adaptive_{}", num_threads), times)?;
-        }
-        {
-            let times = bench_sort!(input, iter_sort_rayon_rayon(&mut input));
-            write_to_file(format!("rayon_rayon_{}", num_threads), times)?;
-        }
-        {
-            let times = bench_sort!(
-                input,
-                iter_sort_size_adaptive(&mut input, num_threads as usize)
-            );
-            write_to_file(format!("size_adaptive_{}", num_threads), times)?;
-        }
-        {
-            let times = bench_sort!(
-                input,
-                iter_sort_size_rayon(&mut input, num_threads as usize)
-            );
-            write_to_file(format!("size_rayon_{}", num_threads), times)?;
+            let times = bench_sort!(input, iter_sort_jc_adaptive(&mut input, num_threads));
+            write_to_file(format!("joincontext_adaptive_{}", num_threads), times)?;
         }
     }
     Ok(())
