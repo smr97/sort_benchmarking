@@ -12,7 +12,7 @@ g++ -flto -march=native -std=c++17 -O2 bench.cpp -ltbb -fopenmp -o bench
 echo ${NUM_THREADS}" threads"
 if [ $NUM_THREADS == "1" ]
 then
-    exit 0
+    taskset --cpu-list 0-$FLAG ./bench $PROBLEM_SIZE 1
 else
     taskset --cpu-list 0-$FLAG ./bench $PROBLEM_SIZE $NUM_THREADS
 fi
