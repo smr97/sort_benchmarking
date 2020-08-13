@@ -1,3 +1,5 @@
+#include "pstl/algorithm"
+#include "pstl/execution"
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -5,8 +7,6 @@
 #include <parallel/algorithm>
 #include <random>
 #include <stdlib.h>
-#include "pstl/algorithm"
-#include "pstl/execution"
 int NUM_RUNS = 100;
 
 void write_results(
@@ -21,7 +21,7 @@ void write_results(
   }
   mean_time /= all_times.size();
   mean_time /= 1000.0;
-  outf<<"mean_time:"<<mean_time<<std::endl;
+  outf << "mean_time:" << mean_time << std::endl;
   outf.close();
 }
 
@@ -37,14 +37,13 @@ int main(int argc, char *argv[]) {
   int num_threads = atoi(argv[2]);
 
   std::vector<uint32_t> v;
-  v.resize(len);
+  for (auto i = 0; i < len; i++) {
+    v.push_back(i);
+  }
 
   auto myinit = [&]() {
-    std::random_device device;
-    std::mt19937_64 rnd(device());
-    for (int i = 0; i < len; ++i) {
-      v[i] = rnd();
-    }
+    auto rng = std::default_random_engine();
+    std::shuffle(v.begin(), v.end(), rng);
   };
 
   if (num_threads == 1) {
